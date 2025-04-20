@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dakshat Jain - 3D Designer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg-dark: #0a0a0a;
+      --bg-darker: #000000;
+      --text-light: #ffffff;
+      --text-lighter: #f5f5f5;
+      --accent: #00d1ff;
+      --card-bg: #1a1a1a;
+      --border: #333333;
+    }
+    
+    /* Loading Screen Styles */
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-darker);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 0.8s ease-out;
+}
+
+.loading-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader {
+  width: 80px;
+  height: 80px;
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.loader-line {
+  position: absolute;
+  border: 2px solid var(--text-light);
+  border-radius: 50%;
+  animation: rotate 2s linear infinite;
+}
+
+.loader-line:nth-child(1) {
+  width: 60px;
+  height: 60px;
+  border-color: var(--text-light) transparent transparent transparent;
+  animation-delay: -0.15s;
+}
+
+.loader-line:nth-child(2) {
+  width: 40px;
+  height: 40px;
+  top: 10px;
+  left: 10px;
+  border-color: transparent var(--text-light) transparent transparent;
+  animation-delay: -0.1s;
+}
+
+.loader-line:nth-child(3) {
+  width: 20px;
+  height: 20px;
+  top: 20px;
+  left: 20px;
+  border-color: transparent transparent var(--text-light) transparent;
+  animation-delay: -0.05s;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  color: var(--text-light);
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 1.5rem;
+  opacity: 0.8;
+}
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text-light);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* Premium Header Design */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 5%;
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+header.scrolled {
+  padding: 1rem 5%;
+  background: rgba(0, 0, 0, 0.85);
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  background: linear-gradient(45deg, #ffffff, #e0e0e0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  position: relative;
+  transition: all 0.4s ease;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.logo::after {
+  content: '3D ARTIST';
+  position: absolute;
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 3px;
+  background: var(--accent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  bottom: -12px;
+  right: 0;
+  opacity: 0.8;
+}
+
+.logo:hover {
+  transform: translateY(-2px);
+  text-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+}
+
+nav {
+  display: flex;
+  gap: 3rem;
+  position: relative;
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--text-lighter);
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  padding: 0.8rem 0;
+  text-transform: uppercase;
+}
+
+nav a i {
+  margin-right: 0.6rem;
+  font-size: 0.9rem;
+  transition: transform 0.3s ease;
+}
+
+nav a::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  background: var(--text-light);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+nav a::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  bottom: -4px;
+  left: 50%;
+  background: var(--text-light);
+  border-radius: 50%;
+  transform: translateX(-50%) scale(0);
+  transition: transform 0.3s ease;
+}
+
+nav a:hover {
+  color: var(--text-light);
+}
+
+nav a:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+nav a:hover::after {
+  transform: translateX(-50%) scale(1);
+}
+
+nav a:hover i {
+  transform: translateY(-3px);
+}
+
+/* Active Link Indicator */
+nav a.active {
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+nav a.active::before {
+  transform: scaleX(1);
+  background: var(--accent);
+}
+
+nav a.active::after {
+  transform: translateX(-50%) scale(1);
+  background: var(--accent);
+}
+
+/* Header Animation on Load */
+@keyframes headerSlideIn {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+header {
+  animation: headerSlideIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 0 5%;
+      position: relative;
+      background: var(--bg-darker);
+    }
+
+    .hero video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+    }
+
+    .hero h1 {
+      font-size: 1.8rem;
+      font-weight: 300;
+      margin-bottom: 0.5rem;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.3s forwards;
+    }
+
+    .hero h2 {
+      font-size: 4rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      line-height: 1.1;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.5s forwards;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2.5rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.7s forwards;
+    }
+
+    .btn {
+      background: var(--text-light);
+      color: var(--bg-dark);
+      padding: 1rem 2.5rem;
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.9s forwards;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .btn:hover {
+      background: transparent;
+      color: var(--text-light);
+      outline: 1px solid var(--text-light);
+    }
+
+    #unmuteBtn {
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 2;
+      background: var(--text-light);
+      color: var(--bg-dark);
+      border: none;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      animation: fadeIn 1s ease-out 1.5s forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .section {
+      padding: 6rem 5%;
+      position: relative;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+      text-align: center;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .section-title.animate {
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+
+    /* Vector Background for About Section */
+    .about-vector-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.1;
+      overflow: hidden;
+    }
+
+    .about-vector-bg svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .about-vector-bg path {
+      stroke: white;
+      stroke-width: 1;
+      fill: none;
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: draw 30s linear infinite;
+    }
+
+    .about-vector-bg circle {
+      fill: white;
+      opacity: 0.3;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .about-vector-bg circle:nth-child(1) {
+      animation-delay: 0s;
+      transform: translate(20%, 30%);
+    }
+
+    .about-vector-bg circle:nth-child(2) {
+      animation-delay: 1s;
+      transform: translate(70%, 60%);
+    }
+
+    .about-vector-bg circle:nth-child(3) {
+      animation-delay: 2s;
+      transform: translate(40%, 80%);
+    }
+
+    @keyframes draw {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) translateX(0);
+      }
+      50% {
+        transform: translateY(-20px) translateX(10px);
+      }
+    }
+
+    .about-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .profile-photo {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid var(--accent);
+      margin: 0 auto 2rem;
+      box-shadow: 0 10px 30px rgba(0, 209, 255, 0.3);
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .profile-photo.animate {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .about-text {
+      margin-bottom: 3rem;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s ease;
+    }
+
+    .about-text.animate {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .tools {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin: 3rem 0;
+      opacity: 0;
+      transition: all 0.8s ease;
+    }
+
+    .tools.animate {
+      opacity: 1;
+    }
+
+    .tool {
+      font-size: 3.5rem;
+      transition: transform 0.3s ease;
+      transform: translateY(20px);
+      opacity: 0;
+    }
+
+    .tool.animate {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .tool:nth-child(1) { transition-delay: 0.1s; }
+    .tool:nth-child(2) { transition-delay: 0.2s; }
+    .tool:nth-child(3) { transition-delay: 0.3s; }
+
+    .tool:hover {
+      transform: scale(1.1) translateY(-5px);
+      color: var(--accent);
+    }
+
+    /* Animated Zig-Zag Timeline with White Lines */
+    .education {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      padding: 4rem 0;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s ease;
+    }
+
+    .education.animate {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Animated White Line */
+    .education::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, 
+                  transparent, 
+                  var(--text-light), 
+                  transparent);
+      transform: translateX(-50%);
+      opacity: 0.7;
+      animation: lineGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes lineGlow {
+      0% { opacity: 0.3; }
+      100% { opacity: 0.9; }
+    }
+
+    /* Updated Timeline with White Accents */
+.education {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 4rem 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s ease;
+}
+
+.education.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* White Timeline Line */
+.education::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, 
+              transparent, 
+              var(--text-light), 
+              transparent);
+  transform: translateX(-50%);
+  opacity: 0.7;
+  animation: lineGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes lineGlow {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.9; }
+}
+
+/* Timeline Cards */
+.education-card {
+  width: 46%;
+  padding: 1.8rem;
+  margin: 1.5rem 0;
+  background: var(--card-bg);
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  position: relative;
+  transform: translateY(30px);
+  opacity: 0;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.education-card.animate {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Alternating Sides with White Accents */
+.education-card:nth-child(odd) {
+  align-self: flex-start;
+  border-left: 3px solid var(--text-light);
+}
+
+.education-card:nth-child(even) {
+  align-self: flex-end;
+  border-right: 3px solid var(--text-light);
+}
+
+/* White Connection Dots */
+.education-card::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--text-light);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+  transform: translateY(-50%) scale(0);
+  transition: transform 0.4s 0.2s ease-out;
+}
+
+.education-card:nth-child(odd)::before {
+  right: -38px;
+}
+
+.education-card:nth-child(even)::before {
+  left: -38px;
+}
+
+.education-card.animate::before {
+  transform: translateY(-50%) scale(1);
+  animation: pulse 2s infinite;
+}
+
+/* White Pulse Animation */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}
+
+/* White Hover Effects */
+.education-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 12px 40px rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .education-card {
+    width: 90%;
+    align-self: center !important;
+    border-left: 3px solid var(--text-light) !important;
+    border-right: none !important;
+  }
+  
+  .education-card::before {
+    right: -38px !important;
+    left: auto !important;
+  }
+  
+  .education::before {
+    left: 30px;
+  }
+}
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 3rem;
+      opacity: 0;
+      transition: all 0.8s ease;
+    }
+
+    .social-links.animate {
+      opacity: 1;
+    }
+
+    .social-link {
+      font-size: 1.5rem;
+      color: var(--text-light);
+      transition: all 0.3s ease;
+      transform: translateY(10px);
+      opacity: 0;
+    }
+
+    .social-link.animate {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .social-link:nth-child(1) { transition-delay: 0.1s; }
+    .social-link:nth-child(2) { transition-delay: 0.2s; }
+    .social-link:nth-child(3) { transition-delay: 0.3s; }
+    .social-link:nth-child(4) { transition-delay: 0.4s; }
+    .social-link:nth-child(5) { transition-delay: 0.5s; }
+
+    .social-link:hover {
+      color: var(--accent);
+      transform: translateY(-3px) scale(1.1);
+    }
+
+    #projects {
+      background: var(--bg-darker);
+      position: relative;
+      overflow: hidden;
+      padding: 8rem 5%;
+    }
+
+    .vector-lines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .vector-lines svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .vector-lines line {
+      stroke: var(--text-light);
+      stroke-width: 2;
+      stroke-linecap: round;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+      animation: floatLine 12s linear infinite, glowPulse 3s ease-in-out infinite alternate;
+    }
+
+    .vector-lines line:nth-child(1) {
+      animation-delay: 0s, 0s;
+    }
+    .vector-lines line:nth-child(2) {
+      animation-delay: 1s, 0.5s;
+    }
+    .vector-lines line:nth-child(3) {
+      animation-delay: 2s, 1s;
+    }
+    .vector-lines line:nth-child(4) {
+      animation-delay: 3s, 1.5s;
+    }
+    .vector-lines line:nth-child(5) {
+      animation-delay: 4s, 2s;
+    }
+
+    @keyframes floatLine {
+      0% {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.4;
+      }
+      90% {
+        opacity: 0.4;
+      }
+      100% {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+
+    @keyframes glowPulse {
+      0% {
+        filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+      }
+      100% {
+        filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.9));
+      }
+    }
+
+    .projects-grid {
+      display: grid;
+      gap: 6rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .project {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      margin: 4rem 0;
+    }
+
+    .project-media {
+      position: relative;
+      transform: scale(0.9);
+      opacity: 0;
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+      margin: 2rem 0;
+    }
+
+    .project-media.animate {
+      transform: scale(1.05);
+      opacity: 1;
+    }
+
+    .project:nth-child(even) .project-media {
+      order: 2;
+    }
+
+    .project:nth-child(even) .project-info {
+      order: 1;
+    }
+     
+    .svg-icon {
+      width: 56px;
+      height: 56px;
+      transition: all 0.3s ease;
+    }
+
+    .project-video {
+      width: 100%;
+      border-radius: 5px;
+      transform-origin: center;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease;
+    }
+
+    .project-video:hover {
+      transform: scale(1.02);
+    }
+
+    .video-control {
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+
+    .video-control:hover {
+      background: var(--accent);
+      transform: scale(1.1);
+    }
+
+    .project-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+
+    .project-title {
+      font-size: 1.8rem;
+      margin-bottom: 0;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    .project-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: white;
+    }
+
+    .project-desc {
+      margin-bottom: 0;
+      color: var(--text-lighter);
+    }
+
+    .project-meta {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      color: var(--text-lighter);
+      font-size: 0.9rem;
+    }
+
+    .project-btn {
+      align-self: flex-start;
+      background: transparent;
+      color: var(--text-light);
+      border: 1px solid var(--text-light);
+      padding: 0.7rem 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .project-btn:hover {
+      background: var(--text-light);
+      color: var(--bg-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+    }
+
+    .contact-form {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease;
+    }
+
+    .form-group.animate {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .form-group:nth-child(1) { transition-delay: 0.1s; }
+    .form-group:nth-child(2) { transition-delay: 0.2s; }
+    .form-group:nth-child(3) { transition-delay: 0.3s; }
+
+    .form-input {
+      width: 100%;
+      padding: 1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-light);
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(0, 209, 255, 0.2);
+    }
+
+    textarea.form-input {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    footer {
+      text-align: center;
+      padding: 3rem;
+      background: var(--bg-darker);
+      border-top: 1px solid var(--border);
+    }
+
+    /* Floating animation for accent elements */
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
+    .floating {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    /* Typewriter effect for hero text */
+     .cursor 
+     {
+       color: #00d1ff;
+       animation: blink 0.7s infinite;
+       margin-left: 2px;
+     }
+
+      @keyframes blink 
+      {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+      }
+
+    @media (max-width: 992px) {
+      .hero h2 {
+        font-size: 3rem;
+      }
+      
+      .project {
+        grid-template-columns: 1fr;
+      }
+      
+      .project:nth-child(even) .project-media {
+        order: 1;
+      }
+      
+      .project:nth-child(even) .project-info {
+        order: 2;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 1rem 5%;
+      }
+      
+      nav {
+        gap: 1.5rem;
+      }
+      
+      .hero {
+        padding-top: 5rem;
+      }
+      
+      .hero h2 {
+        font-size: 2.5rem;
+      }
+      
+      .tools {
+        flex-wrap: wrap;
+        gap: 2rem;
+      }
+      
+      .tool {
+        font-size: 3rem;
+      }
+
+      .projects-grid {
+        gap: 4rem;
+      }
+
+      .project {
+        margin: 3rem 0;
+      }
+
+      .profile-photo {
+        width: 150px;
+        height: 150px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .section {
+        padding: 4rem 1.5rem;
+      }
+      
+      .section-title {
+        font-size: 2rem;
+      }
+      
+      .hero h2 {
+        font-size: 2rem;
+      }
+      
+      .hero p {
+        font-size: 1rem;
+      }
+      
+      .btn {
+        padding: 0.8rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="loading-screen">
+  <div class="loader">
+    <div class="loader-line"></div>
+    <div class="loader-line"></div>
+    <div class="loader-line"></div>
+  </div>
+  <div class="loading-text">Loading Portfolio</div>
+</div>
+
+  <header>
+    <div class="logo">DAKSHAT JAIN</div>
+    <nav>
+      <a href="#about"><i class="fas fa-user"></i> About</a>
+      <a href="#projects"><i class="fas fa-cubes"></i> Projects</a>
+      <a href="#contact"><i class="fas fa-envelope"></i> Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <video id="background-video" autoplay muted loop playsinline>
+      <source src="Timeline 2.mp4" type="video/mp4" />
+    </video>
+    <div class="hero-content">
+      <h1>Hello, I'm</h1>
+      <h2 class="typewriter"><span id="text"></span><span class="cursor">|</span></h2>
+      <p class="floating">3D Artist & Motion Designer</p>
+      <button class="btn" id="view-work-btn">
+        <i class="fas fa-eye"></i> View My Work
+      </button>
+    </div>
+    <button id="unmuteBtn">
+      <i class="fas fa-volume-up"></i> Unmute
+    </button>
+  </section>
+
+  <section id="about" class="section">
+    <!-- Vector Background -->
+    <div class="about-vector-bg">
+      <svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
+        <!-- Abstract path elements -->
+        <path d="M100,100 C200,200 300,100 400,200 C500,300 600,200 700,300 C800,400 900,300 900,500" />
+        <path d="M50,800 C150,700 250,800 350,700 C450,600 550,700 650,600 C750,500 850,600 950,500" />
+        <path d="M900,100 Q950,150 900,200 Q850,250 900,300 Q950,350 900,400 Q850,450 900,500" />
+        
+        <!-- Floating circles -->
+        <circle cx="20%" cy="30%" r="15" />
+        <circle cx="70%" cy="60%" r="10" />
+        <circle cx="40%" cy="80%" r="8" />
+      </svg>
+    </div>
+    
+    <h2 class="section-title">About Me</h2>
+    <div class="about-content">
+      <img src="Photo.jpg" alt="Dakshat Jain" class="profile-photo">
+      <p class="about-text">
+        I specialize in creating stunning 3D visuals and animations using industry-standard tools. 
+        With a passion for photorealistic rendering and motion design, I bring creative concepts to life 
+        through meticulous attention to detail and technical expertise.
+      </p>
+      
+      <div class="tools">
+        <!-- Blender -->
+        <div class="tool" title="Blender">
+          <img src="blender.svg" alt="Blender" class="svg-icon">
+        </div>
+        
+        <!-- Cinema 4D -->
+        <div class="tool" title="Cinema 4D">
+          <img src="Davinci.svg" alt="Cinema 4D" class="svg-icon">
+        </div>
+
+        <!-- Substance Painter -->
+        <div class="tool" title="Substance Painter">
+          <img src="Paint.svg" alt="Substance Painter" class="svg-icon">
+        </div>
+      </div>
+      
+      <div class="education">
+        <div class="education-card">
+          <h4>Bachelor's Degree</h4>
+          <p>Computer Science</p>
+          <p>Fr.Crce,Mumbai</p>
+          <p>2024-2028</p>
+        </div>
+        <div class="education-card">
+          <h4>Senior Secondary</h4>
+          <p>Science</p>
+          <p>Svpv,Mira Road</p>
+          <p>2024</p>
+        </div>
+        <div class="education-card">
+          <h4>3D Animation & Blender</h4>
+          <p>YouTube Tutorials & Personal Projects</p>
+          <p>2024 – Present</p>
+        </div>
+      </div>
+      
+      <div class="social-links">
+        <a href="#" class="social-link"><i class="fab fa-behance"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-artstation"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-vimeo-v"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects" class="section">
+    <!-- Enhanced White Lines Vector Background with Glow -->
+    <div class="vector-lines">
+      <svg>
+        <line x1="0" y1="10%" x2="100%" y2="15%" />
+        <line x1="0" y1="30%" x2="100%" y2="35%" />
+        <line x1="0" y1="50%" x2="100%" y2="55%" />
+        <line x1="0" y1="70%" x2="100%" y2="75%" />
+        <line x1="0" y1="90%" x2="100%" y2="95%" />
+      </svg>
+    </div>
+    
+    <h2 class="section-title">My Projects</h2>
+    <div class="projects-grid">
+      <div class="project" data-index="0">
+        <div class="project-media">
+          <video class="project-video" autoplay muted loop playsinline>
+            <source src="TwT.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="project-info">
+          <h3 class="project-title">Client Project #1</h3>
+          <p class="project-desc">
+            A sleek 3D product animation for a client, showcasing protein powder with dynamic visuals, 
+            smooth transitions, and an energetic feel to boost brand appeal.
+          </p>
+          <div class="project-meta">
+            <span><i class="far fa-clock"></i> Duration : 4 Days</span>
+          </div>
+          <button class="project-btn">
+            <i class="fas fa-expand"></i> View Full Project
+          </button>
+        </div>
+      </div>
+      
+      <div class="project" data-index="1">
+        <div class="project-media">
+          <video class="project-video" autoplay muted loop playsinline>
+            <source src="Hero.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="project-info">
+          <h3 class="project-title">Product Animation</h3>
+          <p class="project-desc">
+            A sleek 3D product animation combining a modern keyboard and a retro handheld console—showcasing 
+            detailed design, smooth motion, and a blend of nostalgia and tech.
+          </p>
+          <div class="project-meta">
+            <span><i class="far fa-clock"></i> Duration : 2 Week</span>
+          </div>
+          <button class="project-btn">
+            <i class="fas fa-expand"></i> View Full Project
+          </button>
+        </div>
+      </div>
+      
+      <div class="project" data-index="2">
+        <div class="project-media">
+          <video class="project-video" autoplay muted loop playsinline>
+            <source src="Jrd.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="project-info">
+          <h3 class="project-title">Client Project #2</h3>
+          <p class="project-desc">
+             A dynamic product visualization showcasing intricate details with smooth camera movements
+            and realistic materials, demonstrating advanced lighting techniques.
+          </p>
+          <div class="project-meta">
+            <span><i class="far fa-clock"></i> Duration : 3 Week</span>
+          </div>
+          <button class="project-btn">
+            <i class="fas fa-expand"></i> View Full Project
+          </button>
+        </div>
+      </div>
+      
+      <!-- New Project Added -->
+      <div class="project" data-index="3">
+        <div class="project-media">
+          <video class="project-video" autoplay muted loop playsinline>
+            <source src="2.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="project-info">
+          <h3 class="project-title">Walk Through Alley</h3>
+          <p class="project-desc">
+            A moody 3D animation set in a dimly lit alley, capturing the atmosphere of flickering lights, 
+            wet pavements, and urban solitude with cinematic lighting and detail.
+          </p>
+          <div class="project-meta">
+            <span><i class="far fa-clock"></i> Duration : 2 Week</span>
+          </div>
+          <button class="project-btn">
+            <i class="fas fa-expand"></i> View Full Project
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="section">
+    <h2 class="section-title">Get In Touch</h2>
+    <form class="contact-form">
+      <div class="form-group">
+        <input type="text" class="form-input" placeholder="Your Name" required>
+      </div>
+      <div class="form-group">
+        <input type="email" class="form-input" placeholder="Your Email" required>
+      </div>
+      <div class="form-group">
+        <textarea class="form-input" placeholder="Your Message" required></textarea>
+      </div>
+      <button type="submit" class="btn">
+        <i class="fas fa-paper-plane"></i> Send Message
+      </button>
+    </form>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Dakshat Jain. All rights reserved.</p>
+  </footer>
+<script>
+    // Mute toggle functionality
+    const backgroundVideo = document.getElementById('background-video');
+    const unmuteBtn = document.getElementById('unmuteBtn');
+    
+    unmuteBtn.addEventListener('click', () => {
+      backgroundVideo.muted = !backgroundVideo.muted;
+      unmuteBtn.innerHTML = backgroundVideo.muted 
+        ? '<i class="fas fa-volume-up"></i> Unmute' 
+        : '<i class="fas fa-volume-mute"></i> Mute';
+    });
+    
+    // Make "View My Work" button scroll to projects
+    document.getElementById('view-work-btn').addEventListener('click', () => {
+      document.getElementById('projects').scrollIntoView({ 
+        behavior: 'smooth' 
+      });
+    });
+    
+    // Project video mute toggles
+    document.querySelectorAll('.project-video').forEach((video) => {
+      const btn = document.createElement('button');
+      btn.className = 'video-control';
+      btn.innerHTML = '<i class="fas fa-volume-up"></i>';
+      
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        video.muted = !video.muted;
+        btn.innerHTML = video.muted 
+          ? '<i class="fas fa-volume-up"></i>' 
+          : '<i class="fas fa-volume-mute"></i>';
+      });
+      
+      video.parentElement.appendChild(btn);
+      
+      // Display duration from data attribute
+      const duration = video.getAttribute('data-duration');
+      const durationElement = document.createElement('div');
+      durationElement.className = 'video-duration';
+      durationElement.textContent = duration;
+      video.parentElement.appendChild(durationElement);
+    });
+    
+    // Scroll animation for all sections
+    const animateOnScroll = () => {
+      const elements = document.querySelectorAll('.section-title, .profile-photo, .about-text, .tools, .tool, .education, .education-card, .social-links, .social-link, .form-group');
+      
+      elements.forEach(element => {
+        const elementPosition = element.getBoundingClientRect().top;
+        const screenPosition = window.innerHeight / 1.2;
+        
+        if(elementPosition < screenPosition) {
+          element.classList.add('animate');
+        }
+      });
+    };
+
+    // Initialize animations on load
+    window.addEventListener('load', () => {
+      document.querySelector('.section-title').classList.add('animate');
+      animateOnScroll();
+    });
+
+    // Add scroll event listener
+    window.addEventListener('scroll', animateOnScroll);
+
+    // Scroll animation for projects
+    const projects = document.querySelectorAll('.project');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const media = entry.target.querySelector('.project-media');
+        if (entry.isIntersecting) {
+          media.classList.add('animate');
+        } else {
+          media.classList.remove('animate');
+        }
+      });
+    }, { 
+      threshold: 0.2,
+      rootMargin: '0px 0px -100px 0px'
+    });
+    
+    projects.forEach(project => {
+      observer.observe(project);
+      const media = project.querySelector('.project-media');
+      media.style.transitionDelay = `${project.dataset.index * 0.1}s`;
+    });
+
+    // Floating animation for elements with .floating class
+    const floatingElements = document.querySelectorAll('.floating');
+    floatingElements.forEach((el, index) => {
+      el.style.animationDelay = `${index * 0.2}s`;
+    });
+    
+    const text = "Dakshat Jain";
+    const typingSpeed = 150;
+    const deletingSpeed = 80;
+    const pauseTime = 1000;
+
+    let i = 0;
+    let isDeleting = false;
+
+    const textElement = document.getElementById("text");
+
+    function typeWriter() {
+      if (!isDeleting && i <= text.length) {
+        textElement.textContent = text.substring(0, i);
+        i++;
+        setTimeout(typeWriter, typingSpeed);
+      } else if (isDeleting && i >= 0) {
+        textElement.textContent = text.substring(0, i);
+        i--;
+        setTimeout(typeWriter, deletingSpeed);
+      } else {
+        isDeleting = !isDeleting;
+        setTimeout(typeWriter, pauseTime);
+      }
+    }
+
+    window.onload = typeWriter;
+    
+    // Video Play/Pause based on visibility
+    const handleVideoVisibility = (entries) => {
+      entries.forEach(entry => {
+        const video = entry.target;
+        if (entry.isIntersecting) {
+          video.play().catch(e => console.log("Autoplay prevented:", e));
+        } else {
+          video.pause();
+        }
+      });
+    };
+
+    // Set up Intersection Observer for videos
+    const videoObserver = new IntersectionObserver(handleVideoVisibility, {
+      threshold: 0.5, // When 50% of video is visible
+      rootMargin: '0px 0px -100px 0px' // Small negative margin at bottom
+    });
+
+    // Observe all videos
+    document.querySelectorAll('video').forEach(video => {
+      // Ensure videos are muted for autoplay (required by most browsers)
+      video.muted = true;
+      videoObserver.observe(video);
+      
+      // For project videos - add play/pause on click
+      if(video.closest('.project-media')) {
+        video.addEventListener('click', () => {
+          video.paused ? video.play() : video.pause();
+        });
+      }
+    });
+
+    // Loading screen functionality
+    const loadingScreen = document.querySelector('.loading-screen');
+
+    // Simulate loading (you can replace this with actual loading logic)
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        loadingScreen.classList.add('hidden');
+        
+        // Remove loading screen from DOM after animation completes
+        setTimeout(() => {
+          loadingScreen.remove();
+        }, 800);
+      }, 2000); // Adjust this timeout to match your actual loading time
+    });
+
+    // Optional: Show loading screen if page takes too long to load
+    setTimeout(() => {
+      if (!document.querySelector('.loading-screen.hidden')) {
+        loadingScreen.querySelector('.loading-text').textContent = "Still loading...";
+      }
+    }, 5000);
+    
+    const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('nav a');
+
+window.addEventListener('scroll', () => {
+  // Header scroll effect
+  const header = document.querySelector('header');
+  header.classList.toggle('scrolled', window.scrollY > 30);
+  
+  // Active section detection
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop;
+    const sectionHeight = section.clientHeight;
+    if (pageYOffset >= (sectionTop - sectionHeight / 3)) {
+      current = section.getAttribute('id');
+    }
+  });
+
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === `#${current}`) {
+      link.classList.add('active');
+    }
+  });
+});
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelector(this.getAttribute('href')).scrollIntoView({
+      behavior: 'smooth'
+    });
+  });
+});
+  </script>
+</body>
+</html>
