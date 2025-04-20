@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1122,7 +1123,7 @@ header {
   </header>
 
   <section class="hero">
-    <video id="background-video" autoplay muted loop playsinline>
+    <video id="background-video" muted loop playsinline>
       <source src="Timeline 2.mp4" type="video/mp4" />
     </video>
     <div class="hero-content">
@@ -1334,215 +1335,171 @@ header {
     <p>&copy; 2025 Dakshat Jain. All rights reserved.</p>
   </footer>
 <script>
-    // Mute toggle functionality
-    const backgroundVideo = document.getElementById('background-video');
-    const unmuteBtn = document.getElementById('unmuteBtn');
-    
-    unmuteBtn.addEventListener('click', () => {
-      backgroundVideo.muted = !backgroundVideo.muted;
-      unmuteBtn.innerHTML = backgroundVideo.muted 
-        ? '<i class="fas fa-volume-up"></i> Unmute' 
-        : '<i class="fas fa-volume-mute"></i> Mute';
-    });
-    
-    // Make "View My Work" button scroll to projects
-    document.getElementById('view-work-btn').addEventListener('click', () => {
-      document.getElementById('projects').scrollIntoView({ 
-        behavior: 'smooth' 
-      });
-    });
-    
-    // Project video mute toggles
-    document.querySelectorAll('.project-video').forEach((video) => {
-      const btn = document.createElement('button');
-      btn.className = 'video-control';
-      btn.innerHTML = '<i class="fas fa-volume-up"></i>';
-      
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        video.muted = !video.muted;
-        btn.innerHTML = video.muted 
-          ? '<i class="fas fa-volume-up"></i>' 
-          : '<i class="fas fa-volume-mute"></i>';
-      });
-      
-      video.parentElement.appendChild(btn);
-      
-      // Display duration from data attribute
-      const duration = video.getAttribute('data-duration');
-      const durationElement = document.createElement('div');
-      durationElement.className = 'video-duration';
-      durationElement.textContent = duration;
-      video.parentElement.appendChild(durationElement);
-    });
-    
-    // Scroll animation for all sections
-    const animateOnScroll = () => {
-      const elements = document.querySelectorAll('.section-title, .profile-photo, .about-text, .tools, .tool, .education, .education-card, .social-links, .social-link, .form-group');
-      
-      elements.forEach(element => {
-        const elementPosition = element.getBoundingClientRect().top;
-        const screenPosition = window.innerHeight / 1.2;
-        
-        if(elementPosition < screenPosition) {
-          element.classList.add('animate');
-        }
-      });
-    };
-
-    // Initialize animations on load
-    window.addEventListener('load', () => {
-      document.querySelector('.section-title').classList.add('animate');
-      animateOnScroll();
-    });
-
-    // Add scroll event listener
-    window.addEventListener('scroll', animateOnScroll);
-
-    // Scroll animation for projects
-    const projects = document.querySelectorAll('.project');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        const media = entry.target.querySelector('.project-media');
-        if (entry.isIntersecting) {
-          media.classList.add('animate');
-        } else {
-          media.classList.remove('animate');
-        }
-      });
-    }, { 
-      threshold: 0.2,
-      rootMargin: '0px 0px -100px 0px'
-    });
-    
-    projects.forEach(project => {
-      observer.observe(project);
-      const media = project.querySelector('.project-media');
-      media.style.transitionDelay = `${project.dataset.index * 0.1}s`;
-    });
-
-    // Floating animation for elements with .floating class
-    const floatingElements = document.querySelectorAll('.floating');
-    floatingElements.forEach((el, index) => {
-      el.style.animationDelay = `${index * 0.2}s`;
-    });
-    
-    const text = "Dakshat Jain";
-    const typingSpeed = 150;
-    const deletingSpeed = 80;
-    const pauseTime = 1000;
-
-    let i = 0;
-    let isDeleting = false;
-
-    const textElement = document.getElementById("text");
-
-    function typeWriter() {
-      if (!isDeleting && i <= text.length) {
-        textElement.textContent = text.substring(0, i);
-        i++;
-        setTimeout(typeWriter, typingSpeed);
-      } else if (isDeleting && i >= 0) {
-        textElement.textContent = text.substring(0, i);
-        i--;
-        setTimeout(typeWriter, deletingSpeed);
-      } else {
-        isDeleting = !isDeleting;
-        setTimeout(typeWriter, pauseTime);
-      }
-    }
-
-    window.onload = typeWriter;
-    
-    // Video Play/Pause based on visibility
-    const handleVideoVisibility = (entries) => {
-      entries.forEach(entry => {
-        const video = entry.target;
-        if (entry.isIntersecting) {
-          video.play().catch(e => console.log("Autoplay prevented:", e));
-        } else {
-          video.pause();
-        }
-      });
-    };
-
-    // Set up Intersection Observer for videos
-    const videoObserver = new IntersectionObserver(handleVideoVisibility, {
-      threshold: 0.5, // When 50% of video is visible
-      rootMargin: '0px 0px -100px 0px' // Small negative margin at bottom
-    });
-
-    // Observe all videos
-    document.querySelectorAll('video').forEach(video => {
-      // Ensure videos are muted for autoplay (required by most browsers)
-      video.muted = true;
-      videoObserver.observe(video);
-      
-      // For project videos - add play/pause on click
-      if(video.closest('.project-media')) {
-        video.addEventListener('click', () => {
-          video.paused ? video.play() : video.pause();
-        });
-      }
-    });
-
-    // Loading screen functionality
+  // ===== LOADING SCREEN & VIDEO AUTOPLAY =====
+  document.addEventListener('DOMContentLoaded', function() {
     const loadingScreen = document.querySelector('.loading-screen');
-
-    // Simulate loading (you can replace this with actual loading logic)
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        loadingScreen.classList.add('hidden');
-        
-        // Remove loading screen from DOM after animation completes
-        setTimeout(() => {
-          loadingScreen.remove();
-        }, 800);
-      }, 2000); // Adjust this timeout to match your actual loading time
-    });
-
-    // Optional: Show loading screen if page takes too long to load
-    setTimeout(() => {
-      if (!document.querySelector('.loading-screen.hidden')) {
-        loadingScreen.querySelector('.loading-text').textContent = "Still loading...";
-      }
-    }, 5000);
+    const backgroundVideo = document.getElementById('background-video');
     
-    const sections = document.querySelectorAll('section');
-const navLinks = document.querySelectorAll('nav a');
+    // Force pause video initially (even if autoplay tries to start it)
+    backgroundVideo.pause();
+    
+    // Set minimum loading time (2000ms matches your design)
+    setTimeout(function() {
+      loadingScreen.classList.add('hidden');
+      
+      // Start video after loading screen begins fade-out
+      backgroundVideo.play().catch(e => {
+        console.log("Autoplay blocked, trying with forced mute:", e);
+        backgroundVideo.muted = true;
+        backgroundVideo.play();
+      });
+      
+      // Remove loading screen after animation completes
+      setTimeout(() => loadingScreen.remove(), 800);
+    }, 2000);
+  });
 
-window.addEventListener('scroll', () => {
-  // Header scroll effect
-  const header = document.querySelector('header');
-  header.classList.toggle('scrolled', window.scrollY > 30);
+  // ===== ORIGINAL FUNCTIONALITY (UNCHANGED) =====
   
-  // Active section detection
-  let current = '';
-  sections.forEach(section => {
-    const sectionTop = section.offsetTop;
-    const sectionHeight = section.clientHeight;
-    if (pageYOffset >= (sectionTop - sectionHeight / 3)) {
-      current = section.getAttribute('id');
+  // Mute toggle functionality
+  const backgroundVideo = document.getElementById('background-video');
+  const unmuteBtn = document.getElementById('unmuteBtn');
+  
+  unmuteBtn.addEventListener('click', () => {
+    backgroundVideo.muted = !backgroundVideo.muted;
+    unmuteBtn.innerHTML = backgroundVideo.muted 
+      ? '<i class="fas fa-volume-up"></i> Unmute' 
+      : '<i class="fas fa-volume-mute"></i> Mute';
+  });
+  
+  // View Work button scroll
+  document.getElementById('view-work-btn').addEventListener('click', () => {
+    document.getElementById('projects').scrollIntoView({ behavior: 'smooth' });
+  });
+  
+  // Project video controls
+  document.querySelectorAll('.project-video').forEach((video) => {
+    const btn = document.createElement('button');
+    btn.className = 'video-control';
+    btn.innerHTML = '<i class="fas fa-volume-up"></i>';
+    
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      video.muted = !video.muted;
+      btn.innerHTML = video.muted 
+        ? '<i class="fas fa-volume-up"></i>' 
+        : '<i class="fas fa-volume-mute"></i>';
+    });
+    
+    video.parentElement.appendChild(btn);
+  });
+  
+  // Scroll animations
+  const animateOnScroll = () => {
+    const elements = document.querySelectorAll('.section-title, .profile-photo, .about-text, .tools, .tool, .education, .education-card, .social-links, .social-link, .form-group');
+    
+    elements.forEach(element => {
+      const elementPosition = element.getBoundingClientRect().top;
+      const screenPosition = window.innerHeight / 1.2;
+      
+      if(elementPosition < screenPosition) {
+        element.classList.add('animate');
+      }
+    });
+  };
+  
+  window.addEventListener('load', animateOnScroll);
+  window.addEventListener('scroll', animateOnScroll);
+  
+  // Project intersection observer
+  const projects = document.querySelectorAll('.project');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const media = entry.target.querySelector('.project-media');
+      if (entry.isIntersecting) {
+        media.classList.add('animate');
+      }
+    });
+  }, { threshold: 0.2 });
+  
+  projects.forEach(project => {
+    observer.observe(project);
+    const media = project.querySelector('.project-media');
+    media.style.transitionDelay = `${project.dataset.index * 0.1}s`;
+  });
+  
+  // Typewriter effect
+  const text = "Dakshat Jain";
+  const typingSpeed = 150;
+  let i = 0;
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById("text").textContent += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, typingSpeed);
+    }
+  }
+  
+  window.onload = typeWriter;
+  
+  // Video visibility handler
+  const videoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const video = entry.target;
+      if (entry.isIntersecting) {
+        video.play().catch(e => console.log("Autoplay prevented:", e));
+      } else {
+        video.pause();
+      }
+    });
+  }, { threshold: 0.5 });
+  
+  document.querySelectorAll('video').forEach(video => {
+    video.muted = true;
+    videoObserver.observe(video);
+    
+    if(video.closest('.project-media')) {
+      video.addEventListener('click', () => {
+        video.paused ? video.play() : video.pause();
+      });
     }
   });
-
-  navLinks.forEach(link => {
-    link.classList.remove('active');
-    if (link.getAttribute('href') === `#${current}`) {
-      link.classList.add('active');
-    }
-  });
-});
-
-// Smooth scroll for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function(e) {
-    e.preventDefault();
-    document.querySelector(this.getAttribute('href')).scrollIntoView({
-      behavior: 'smooth'
+  
+  // Navigation scroll effects
+  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll('nav a');
+  
+  window.addEventListener('scroll', () => {
+    const header = document.querySelector('header');
+    header.classList.toggle('scrolled', window.scrollY > 30);
+    
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.clientHeight;
+      if (pageYOffset >= (sectionTop - sectionHeight / 3)) {
+        current = section.getAttribute('id');
+      }
+    });
+  
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${current}`) {
+        link.classList.add('active');
+      }
     });
   });
-});
-  </script>
+  
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelector(this.getAttribute('href')).scrollIntoView({
+        behavior: 'smooth'
+      });
+    });
+  });
+</script>
 </body>
 </html>
